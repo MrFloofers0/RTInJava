@@ -41,7 +41,7 @@ public class ImageUtil {
         }
     }
 
-    public void writeRow(Pixel[] RGB) throws IOException {
+    public void writeRow(Color[] RGB) throws IOException {
         String lineToWrite = "";
         try {
 

@@ -3,20 +3,22 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        int width = 256;
-        int height = 256;
+        int height = 300;
+        double aspectRatio = 16.0/9.0;
+        int width = (int) aspectRatio * height;
 
-        Pixel[] row = new Pixel[width];
+        int FOV = 90; //In Degrees
+
+
+        Color[] row = new Color[width];
         ImageUtil img = new ImageUtil(width, height);
-
         img.initializeImage();
 
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                row[j] = new Pixel((short) i, (short) j, (short) 0);
-            }
-            img.writeRow(row);
-        }
+
+            System.out.println("Scanlines remaining:" + (height));
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+
 
     }
 

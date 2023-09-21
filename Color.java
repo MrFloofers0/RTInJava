@@ -1,10 +1,10 @@
-public class Pixel {
+public class Color {
 
     private short red;
     private short blue;
     private short green;
 
-    public Pixel(short red, short green, short blue){
+    public Color(short red, short green, short blue){
         this.red = red;
         this.blue = blue;
         this.green = green;
@@ -14,9 +14,7 @@ public class Pixel {
         return red;
     }
 
-    public short getGreen() {
-        return green;
-    }
+    public short getGreen() {return green;}
 
     public short getBlue() {
         return blue;

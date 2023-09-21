@@ -1,9 +1,20 @@
 public class VectorUtil {
-    public static Vector add(Vector first, Vector second) {
-        return new Vector(first.x + second.x, first.y + second.y, first.z + second.z);
+    public Vector add(Vector first, Vector second) {
+        return new Vector(
+                first.x + second.x,
+                first.y + second.y,
+                first.z + second.z);
     }
 
-    public static Vector square(Vector src) {
+    public Vector subtract(Vector src, Vector src2) {
+        return new Vector(
+                src.x - src2.x,
+                src.y - src2.y,
+                src.z - src2.z
+        );
+    }
+
+    public Vector square(Vector src) {
         return new Vector(
                 src.x * src.x,
                 src.y * src.y,
@@ -11,7 +22,7 @@ public class VectorUtil {
         );
     }
 
-    public static Vector scalar(Vector src, double scalar) {
+    public Vector scalar(Vector src, double scalar) {
         return new Vector(
                 src.x * scalar,
                 src.y * scalar,
@@ -19,15 +30,15 @@ public class VectorUtil {
         );
     }
 
-    public static double dotProduct(Vector src, Vector src2) {
+    public double dotProduct(Vector src, Vector src2) {
         return (
                 (src.x * src2.x) +
-                (src.y * src2.y) +
-                (src.z * src2.z)
+                        (src.y * src2.y) +
+                        (src.z * src2.z)
         );
     }
 
-    public static Vector crossProduct(Vector src, Vector src2){
+    public Vector crossProduct(Vector src, Vector src2) {
         return new Vector(
                 (src.y * src2.z) - (src.z * src2.y),
                 (src.z * src2.x) - (src.x * src2.z),

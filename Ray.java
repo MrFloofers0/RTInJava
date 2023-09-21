@@ -1,16 +1,18 @@
 public class Ray {
     private Vector direction;
     private Vector origin;
+    private Color raycolor = new Color((short) 0, (short) 0, (short) 0);
 
-    public Ray(Vector direction, Vector origin) {
+    private VectorUtil u;
+    public Ray(Vector origin, Vector direction) {
         this.direction = direction;
         this.origin = origin;
     }
 
     public Vector pt(double t) {
-        return VectorUtil.add(
+        return u.add(
                 origin,
-                VectorUtil.scalar(direction, t)
+                u.scalar(direction, t)
         );
     }
 
@@ -20,5 +22,13 @@ public class Ray {
 
     public Vector getDirection() {
         return direction;
+    }
+
+    public Color rayColor(){
+        return raycolor;
+    }
+
+    public void setColor(Color c){
+        raycolor = c;
     }
 }

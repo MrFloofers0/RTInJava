@@ -10,6 +10,12 @@ public class Color {
         this.green = green;
     }
 
+    public Color(double red, double green, double blue){
+        this.red = (short)(red * 255.999);
+        this.green = (short)(green * 255.999);
+        this.blue = (short)(blue * 255.999);
+    }
+
     public short getRed() {
         return red;
     }
@@ -19,4 +25,6 @@ public class Color {
     public short getBlue() {
         return blue;
     }
+
+
 }

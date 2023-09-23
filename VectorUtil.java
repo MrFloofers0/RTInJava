@@ -1,3 +1,5 @@
+import java.lang.Math.*;
+
 public class VectorUtil {
     public Vector add(Vector first, Vector second) {
         return new Vector(
@@ -46,4 +48,8 @@ public class VectorUtil {
         );
     }
 
+    public Vector unitVector(Vector src) {
+        double hyp = Math.sqrt((src.x * src.x) + (src.y * src.y) + (src.z * src.z));
+        return new Vector(src.x/hyp, src.y/hyp, src.z/hyp);
+    }
 }

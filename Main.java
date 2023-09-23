@@ -26,7 +26,7 @@ public class Main {
         // What this is actually saying is cameraCenter - Vector(0, 0, focalLength) - viewport_u/2 - viewport_v/2
         //Vector uvTemp = u.subtract(u.scalar(viewport_u, 0.5), u.scalar(viewport_v, 0.5));
         //Vector viewportUpperLeft = u.subtract(cameraCenter, u.subtract(new Vector(0, 0, focalLength), uvTemp));
-        Vector viewportUpperLeft = u.add(new Vector(-viewportWidth * 0.5, viewportHeight * 0.5, focalLength), cameraCenter);
+        Vector viewportUpperLeft = u.add(new Vector(-viewportWidth * 0.5, viewportHeight * 0.5, -focalLength), cameraCenter);
         // What this is actually saying is viewportUpperLeft + (pixelDeltaU + pixelDeltaV) * 0.5
         Vector pixel00 = u.add(viewportUpperLeft, u.scalar(u.add(pixelDeltaU, pixelDeltaV), 0.5));
 
@@ -53,13 +53,13 @@ public class Main {
 
     }
 
-    public static Color rayColor(Ray r) {
+
+    public static Color rayColor(Ray r, Hittable world, hitRecord rec) {
+
         VectorUtil util = new VectorUtil();
-        boolean t = hitSphere(new Vector(0, 0, -1), 0.5, r);
-        if (t) {
-            //Vector N = util.unitVector(util.subtract(r.pt(t), new Vector(0, 0, -1)));
-            //return new Color( 0.5 * N.x, 0.5 * N.y, 0.5 * N.z);
-            return new Color(1.0, 0, 0);
+        Vector sphereCenter = new Vector(0, 0, -1);
+        if (world.hit(r, 0, Double.POSITIVE_INFINITY, rec)) {
+            return new Color((rec.normal.x + 1) * 0.5, (rec.normal.y + 1) * 0.5, (rec.normal.z + 1) * 0.5);
         }
 
         Vector unitDirection = util.unitVector(r.getDirection());
@@ -70,17 +70,5 @@ public class Main {
                 (1.0 - a) + (a));
     }
 
-    public static boolean hitSphere(Vector center, double radius, Ray r) {
-        VectorUtil u = new VectorUtil();
-        Vector aMinusC = u.subtract(r.getOrigin(), center);
-
-        double a = u.dotProduct(r.getDirection(), r.getDirection());
-        double b = (2.0 * u.dotProduct(r.getDirection(), aMinusC));
-        double c = u.dotProduct(aMinusC, aMinusC) - (radius * radius);
-
-        double discriminant = (b * b) - (4 * (a * c));
-
-        return (discriminant >= 0);
-    }
 
 }

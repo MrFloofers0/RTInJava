@@ -3,7 +3,7 @@ public class Ray {
     private Vector origin;
     private Color raycolor = new Color((short) 0, (short) 0, (short) 0);
 
-    private VectorUtil u;
+    private VectorUtil u = new VectorUtil();
     public Ray(Vector origin, Vector direction) {
         this.direction = direction;
         this.origin = origin;

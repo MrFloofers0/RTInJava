@@ -52,4 +52,8 @@ public class VectorUtil {
         double hyp = Math.sqrt((src.x * src.x) + (src.y * src.y) + (src.z * src.z));
         return new Vector(src.x/hyp, src.y/hyp, src.z/hyp);
     }
+
+    public double length(Vector src){
+        return Math.sqrt((src.x * src.x) + (src.y * src.y) + (src.z * src.z));
+    }
 }

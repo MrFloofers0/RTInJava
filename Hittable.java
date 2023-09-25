@@ -1,5 +1,5 @@
 public abstract class Hittable {
-    public abstract boolean hit(Ray r, double rayTmin, double rayTmax, Hittable rec);
+    public abstract boolean hit(Ray r, Interval rayRange, Hittable rec);
 
     public VectorUtil u = new VectorUtil();
     public Vector p;

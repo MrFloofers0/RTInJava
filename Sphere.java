@@ -11,7 +11,7 @@ public class Sphere extends Hittable {
     }
 
     @Override
-    public boolean hit(Ray r, double rayTmin, double rayTmax, Hittable rec) {
+    public boolean hit(Ray r, Interval tRange, Hittable rec) {
         Vector aMinusC = u.subtract(r.getOrigin(), center);
 
         double dirLength = u.length(r.getDirection());
@@ -29,11 +29,11 @@ public class Sphere extends Hittable {
         double sqrtd = Math.sqrt(discriminant);
 
         double root = (-halfB - sqrtd) / a;
-        if (root <= rayTmin || rayTmax <= root) {
+        if (tRange.surrounds(root)) {
 
             root = (-halfB + sqrtd) / a;
 
-            if (root <= rayTmin || rayTmax <= root) {
+            if (tRange.surrounds((root))) {
 
                 return false;
 
@@ -43,9 +43,7 @@ public class Sphere extends Hittable {
         rec.t = root;
         rec.p = r.pt(rec.t);
         rec.normal = u.scalar(u.subtract(rec.p, center), (1.0 / radius));
-        Vector outNormal = u.scalar(u.subtract(rec.p, center), (1.0 / radius));
-        rec.setFaceNormal(r, outNormal);
-
+        rec.setFaceNormal(r, rec.normal);
         return true;
     }
 }

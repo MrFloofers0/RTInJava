@@ -7,14 +7,14 @@ public class HittableList extends Hittable {
         list = hitList;
     }
 
-    public boolean hit(Ray r, double rayTmin, double rayTmax, hitRecord rec) {
-        hitRecord tempRecord = rec;
+    public boolean hit(Ray r, double rayTmin, double rayTmax, Hittable rec) {
+        Hittable tempRecord = rec;
         boolean hitAnything = false;
-        double currentClosest = rayTmax;
+        double currentClosest;
 
         for (Hittable hittable : list) {
 
-            if (hittable.hit(r, rayTmin, currentClosest, tempRecord)) {
+            if (hittable.hit(r, rayTmin, rayTmax, tempRecord)) {
                 hitAnything = true;
                 currentClosest = tempRecord.t;
                 rec = tempRecord;

@@ -11,7 +11,7 @@ public class Sphere extends Hittable {
     }
 
     @Override
-    public boolean hit(Ray r, double rayTmin, double rayTmax, hitRecord rec) {
+    public boolean hit(Ray r, double rayTmin, double rayTmax, Hittable rec) {
         Vector aMinusC = u.subtract(r.getOrigin(), center);
 
         double dirLength = u.length(r.getDirection());

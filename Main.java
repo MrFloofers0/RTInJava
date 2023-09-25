@@ -3,7 +3,7 @@ import java.lang.Math.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-
+        //pane and camera
         VectorUtil u = new VectorUtil();
         double aspectRatio = 16.0 / 9.0;
         int imageHeight = 800;
@@ -13,6 +13,15 @@ public class Main {
 
         double focalLength = 1.0;
         Vector cameraCenter = new Vector(0, 0, 0);
+        //The WHOLE UNIVERSE
+
+        HittableList world = new HittableList(new Sphere[]{
+
+                new Sphere(new Vector(0, -100.5, -1), 100),
+                new Sphere(new Vector(0, 0, -1), 0.5)});
+
+
+
 
         //Vectors along the horizontal and vertical edges of the viewport
         Vector viewport_u = new Vector(viewportWidth, 0, 0);
@@ -34,6 +43,7 @@ public class Main {
         img.initializeImage();
 
         Color[] row = new Color[imageWidth];
+        Sphere test = new Sphere(new Vector(0, 0, -1), 0.5);
         for (int j = 0; j < imageHeight; j++) {
 
             System.out.println("Scanlines remaining:" + (imageHeight - j));
@@ -44,7 +54,7 @@ public class Main {
                 //Translate the upper left pixel by pixel delta u and pixel delta v
                 Vector rayDirection = u.subtract(pixelCenter, cameraCenter);
                 Ray r = new Ray(cameraCenter, rayDirection);
-                row[i] = rayColor(r);
+                row[i] = rayColor(r, world);
             }
             img.writeRow(row);
 
@@ -54,13 +64,15 @@ public class Main {
     }
 
 
-    public static Color rayColor(Ray r, Hittable world, hitRecord rec) {
+    public static Color rayColor(Ray r, HittableList world) {
 
         VectorUtil util = new VectorUtil();
-        Vector sphereCenter = new Vector(0, 0, -1);
-        if (world.hit(r, 0, Double.POSITIVE_INFINITY, rec)) {
-            return new Color((rec.normal.x + 1) * 0.5, (rec.normal.y + 1) * 0.5, (rec.normal.z + 1) * 0.5);
+
+            if (world.hit(r, 0, Double.POSITIVE_INFINITY, world)) {
+                return new Color((world.normal.x + 1) * 0.5, (world.normal.y + 1) * 0.5, (world.normal.z + 1) * 0.5);
+
         }
+
 
         Vector unitDirection = util.unitVector(r.getDirection());
         double a = 0.5 * (unitDirection.y + 1.0);

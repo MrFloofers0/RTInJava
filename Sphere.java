@@ -42,7 +42,7 @@ public class Sphere extends Hittable {
 
         rec.t = root;
         rec.p = r.pt(rec.t);
-        rec.normal = u.scalar(u.subtract(rec.p, center), (1.0 / radius));
+        rec.normal = u.unitVector(u.subtract(rec.p, center));
         rec.setFaceNormal(r, rec.normal);
         return true;
     }

@@ -50,10 +50,52 @@ public class VectorUtil {
 
     public Vector unitVector(Vector src) {
         double hyp = Math.sqrt((src.x * src.x) + (src.y * src.y) + (src.z * src.z));
-        return new Vector(src.x/hyp, src.y/hyp, src.z/hyp);
+        return new Vector(src.x / hyp, src.y / hyp, src.z / hyp);
     }
 
-    public double length(Vector src){
+    public Vector randomDirection() {
+        Vector rand = new Vector(Math.random(), Math.random(), Math.random());
+        return unitVector(rand);
+    }
+    public Vector randomInUnitSphere(){
+        while (true) {
+            Vector rand = new Vector(Math.random(), Math.random(), Math.random());
+            if(lengthSquared(rand) < 1){
+                return rand;
+            }
+        }
+
+    }
+
+    public Vector randomUnitVector(){
+        return unitVector(randomInUnitSphere());
+    }
+
+    public Vector randomOnHemisphere2(Vector normal){
+        Vector onUsp = randomUnitVector();
+        if(dotProduct( normal, onUsp) > 0){
+            return onUsp;
+        }
+        return scalar(onUsp, -1);
+    }
+
+    public double length(Vector src) {
         return Math.sqrt((src.x * src.x) + (src.y * src.y) + (src.z * src.z));
+    }
+
+    public double lengthSquared(Vector src){
+        double l = length(src);
+        return l * l;
+    }
+
+    public Vector randomOnHemisphere(Vector normal) {
+        Vector tempDir = randomDirection();
+        double temp = dotProduct(normal, tempDir);
+
+        if (temp < 0) {
+
+            return scalar(tempDir, -1.0);
+        }
+        return unitVector(tempDir);
     }
 }

@@ -47,5 +47,15 @@ public class Color {
         return blue;
     }
 
+    public double getRedDouble(){
+        return ((double) red / 255);
+    }
+    public double getGreenDouble(){
+        return ((double) green / 255);
+    }
+    public double getBlueDouble(){
+        return ((double) blue / 255);
+    }
+
 
 }

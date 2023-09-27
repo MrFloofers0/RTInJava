@@ -1,9 +1,15 @@
+import java.lang.Math;
+
 public class Color {
 
     private short red;
     private short blue;
     private short green;
-    Interval enclose = new Interval(0,255.999);
+    Interval enclose = new Interval(0, 255.999);
+
+    private double deLinearize(double num){
+        return num;
+    }
 
     public Color(short red, short green, short blue) {
         this.red = red;
@@ -12,9 +18,9 @@ public class Color {
     }
 
     public Color(double red, double green, double blue) {
-        this.red = (short) enclose.clamp(red * 255.999);
-        this.green = (short) enclose.clamp(green * 255.999);
-        this.blue = (short) enclose.clamp(blue * 255.999);
+        this.red = (short) enclose.clamp(deLinearize(red) * 255.999);
+        this.green = (short) enclose.clamp(deLinearize(green) * 255.999);
+        this.blue = (short) enclose.clamp(deLinearize(blue) * 255.999);
     }
 
     public Color(Color[] toAvg) {
@@ -47,13 +53,15 @@ public class Color {
         return blue;
     }
 
-    public double getRedDouble(){
+    public double getRedDouble() {
         return ((double) red / 255);
     }
-    public double getGreenDouble(){
+
+    public double getGreenDouble() {
         return ((double) green / 255);
     }
-    public double getBlueDouble(){
+
+    public double getBlueDouble() {
         return ((double) blue / 255);
     }
 

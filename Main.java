@@ -1,22 +1,21 @@
 import java.io.IOException;
-import java.lang.Math.*;
 
 public class Main {
     static VectorUtil u = new VectorUtil();
     static double aspectRatio = 16.0 / 9.0;
-    static int imageHeight = 240;
+    static int imageHeight = 480;
 
     static double viewportHeight = 2.0;
     static double focalLength = 1.0;
 
-    static int samplesPerPixel = 10; // be careful with this! the time complexity scales as O(n^2)
+    static int samplesPerPixel = 5; // be careful with this! the time complexity scales as O(n^2)
 
-    static int maxDepth = 1000; // time scales linearly here
+    static int maxDepth = 500; // time scales linearly here
 
     public static void main(String[] args) throws IOException {
         //Camera settings
 
-        Vector cameraCenter = new Vector(0, 0, 0);
+        Vector cameraCenter = new Vector(0, 0, 1);
         Camera camera = new Camera(
                 cameraCenter,
                 viewportHeight,
@@ -25,13 +24,22 @@ public class Main {
                 focalLength
 
         );
+        //Materials in the whole universe
+        Material ground = new LambertianDiffuse(new Color(0.8, 0.8, 0.0), 0);
+        Material center = new LambertianDiffuse(new Color(0.7, 0.3, 0.3) ,0);
+        Material left = new Metal(new Color(1,1,1), 0.3);
+        Material right = new Metal(new Color(1, 1, 1), 0.3);
 
         //The WHOLE UNIVERSE
 
         HittableList world = new HittableList(new Sphere[]{
 
-                new Sphere(new Vector(0, -100.5, -1), 100),
-                new Sphere(new Vector(0, 0, -1), 0.5)});
+                new Sphere(new Vector(0, -10000.5, 0), 10000, ground),
+                new Sphere(new Vector(0, 0, 0), 0.5, center),
+                new Sphere(new Vector(-1.2, 0, 0), 0.5, left),
+                new Sphere(new Vector(1.2, 0, 0), 0.5, right)
+
+        });
 
 
         ImageUtil img = new ImageUtil(camera.imageWidth, imageHeight);
@@ -63,32 +71,30 @@ public class Main {
 
         VectorUtil util = new VectorUtil();
         int currentDepth = depth + 1;
-        if (world.hit(r, new Interval(0.00001, Double.POSITIVE_INFINITY), world) && (depth < maxDepth)) {
-            /*return new Color(
-                    (world.normal.x + 1) * 0.5,
-                    (world.normal.y + 1) * 0.5,
-                    (world.normal.z + 1) * 0.5);
+        if (world.hit(r, new Interval(0.001, Double.POSITIVE_INFINITY), world) && (depth < maxDepth)) {
 
-             */
-            Vector randDir = u.randomOnHemisphere2(world.normal);
-            Color rc = rayColor(new Ray(world.p, randDir), world, currentDepth, maxDepth);
-            double colorScalar = (0.3);
+            Color attenuation = null;
+            Ray scattered = null;
+            MaterialData mat = world.mat.Scatter(world.contactPoint, world, attenuation, scattered);
+            Ray randDir = mat.bouncedRay;
+            Color rc = rayColor(randDir, world, currentDepth, maxDepth);
             return new Color(
-                    (rc.getRedDouble()) * colorScalar,
-                    (rc.getGreenDouble()) * colorScalar,
-                    (rc.getBlueDouble()) * colorScalar
+                    (rc.getRedDouble() * mat.materialColor.getRedDouble()),
+                    (rc.getGreenDouble() * mat.materialColor.getGreenDouble()),
+                    (rc.getBlueDouble() * mat.materialColor.getBlueDouble())
             );
-        } else if(depth >= maxDepth){
-            return new Color(0, 0, 0);
+
         }
+            Vector unitDirection = util.unitVector(r.getDirection());
+            double a = 0.5 * (unitDirection.y + 1.0);
+            return new Color(
+                    (1.0 - a) + (a * 0.5),
+                    (1.0 - a) + (a * 0.7),
+                    (1.0 - a) + (a));
 
 
-        Vector unitDirection = util.unitVector(r.getDirection());
-        double a = 0.5 * (unitDirection.y + 1.0);
-        return new Color(
-                (1.0 - a) + (a * 0.5),
-                (1.0 - a) + (a * 0.7),
-                (1.0 - a) + (a));
+
+
     }
 
 
@@ -99,8 +105,8 @@ public class Main {
         Vector tempDeltaV = u.scalar(pixelDeltaV, (1.0 / (double) samplesPerPixel));
 
         Vector tempUpperLeft = new Vector(
-                r.getDirection().x - (0.5 * pixelDeltaU.x),
-                r.getDirection().y - (0.5 * pixelDeltaV.y),
+                r.getDirection().x - (0.5 * tempDeltaU.x),
+                r.getDirection().y - (0.5 * tempDeltaV.y),
                 r.getDirection().z);
 
         Vector tempP00 = u.add(tempUpperLeft, u.add(u.scalar(tempDeltaU, (1.0 / samplesPerPixel)), u.scalar(tempDeltaV, 1.0 / samplesPerPixel)));

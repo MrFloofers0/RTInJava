@@ -3,11 +3,13 @@ import java.lang.Math;
 public class Sphere extends Hittable {
     private Vector center;
     private double radius;
-    private VectorUtil u = new VectorUtil();
+    private final VectorUtil u = new VectorUtil();
 
-    public Sphere(Vector center, double radius) {
+    private Material mat;
+    public Sphere(Vector center, double radius, Material mat) {
         this.center = center;
         this.radius = radius;
+        this.mat = mat;
     }
 
     @Override
@@ -41,9 +43,10 @@ public class Sphere extends Hittable {
         }
 
         rec.t = root;
-        rec.p = r.pt(rec.t);
-        rec.normal = u.unitVector(u.subtract(rec.p, center));
+        rec.contactPoint = r.pt(rec.t);
+        rec.normal = u.unitVector(u.subtract(rec.contactPoint, center));
         rec.setFaceNormal(r, rec.normal);
+        rec.mat = mat;
         return true;
     }
 }

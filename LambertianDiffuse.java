@@ -16,12 +16,17 @@ public class LambertianDiffuse extends Material {
 
     @Override
     public MaterialData Scatter(Vector dirIn, Hittable rec, Color attenuation, Ray scattered) {
+        boolean rayHits = true;
         Vector scatterDirection = u.add(rec.normal, u.randomUnitVector());
         if (u.length(scatterDirection) < 0.0001){
             scatterDirection = rec.normal;
         }
         Ray scatterRay = new Ray(rec.contactPoint, scatterDirection);
-        return new MaterialData(true, new Color(
+        if(Math.random() < absorption){
+            rayHits = false;
+        }
+
+        return new MaterialData(rayHits, new Color(
                 albedo.getRedDouble() - absorption,
                 albedo.getGreenDouble() - absorption,
                 albedo.getBlueDouble() - absorption),

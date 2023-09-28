@@ -27,17 +27,19 @@ public class Main {
         //Materials in the whole universe
         Material ground = new LambertianDiffuse(new Color(0.8, 0.8, 0.0), 0);
         Material center = new LambertianDiffuse(new Color(0.7, 0.3, 0.3) ,0);
-        Material left = new Metal(new Color(1,1,1), 0.3);
-        Material right = new Metal(new Color(1, 1, 1), 0.3);
+        Material left = new Metal(new Color(1,1,1), 0);
+        Material right = new Dielectric(3, 0, new Color(1,1,1));
+        Material back = new LambertianDiffuse(new Color(0.1, 0.1, 0.7), 0);
 
         //The WHOLE UNIVERSE
 
         HittableList world = new HittableList(new Sphere[]{
 
-                new Sphere(new Vector(0, -10000.5, 0), 10000, ground),
-                new Sphere(new Vector(0, 0, 0), 0.5, center),
+                new Sphere(new Vector(0, -20.5, 0), 20, ground),
+                new Sphere(new Vector(0, 0, 0), 0.5, right),
                 new Sphere(new Vector(-1.2, 0, 0), 0.5, left),
-                new Sphere(new Vector(1.2, 0, 0), 0.5, right)
+                new Sphere(new Vector(1.2, 0, 0), 0.5, center),
+                new Sphere(new Vector(1, 0, -1.3), 0.5,  back)
 
         });
 
@@ -58,7 +60,7 @@ public class Main {
                 Vector rayDirection = u.subtract(pixelCenter, cameraCenter);
                 Ray r = new Ray(cameraCenter, rayDirection);
                 row[i] = subRay(samplesPerPixel, r, camera.pixelDeltaV, camera.pixelDeltaU, world);
-            }
+                }
             img.writeRow(row);
 
         }
@@ -71,11 +73,14 @@ public class Main {
 
         VectorUtil util = new VectorUtil();
         int currentDepth = depth + 1;
-        if (world.hit(r, new Interval(0.001, Double.POSITIVE_INFINITY), world) && (depth < maxDepth)) {
+        if (world.hit(r, new Interval(0.000001, Double.POSITIVE_INFINITY), world) && (depth < maxDepth)) {
 
             Color attenuation = null;
             Ray scattered = null;
-            MaterialData mat = world.mat.Scatter(world.contactPoint, world, attenuation, scattered);
+            MaterialData mat = world.mat.Scatter(u.unitVector(world.contactPoint), world, attenuation, scattered);
+            if(!mat.hit){
+                return mat.materialColor;
+            }
             Ray randDir = mat.bouncedRay;
             Color rc = rayColor(randDir, world, currentDepth, maxDepth);
             return new Color(

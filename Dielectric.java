@@ -1,59 +1,55 @@
 public class Dielectric extends Material {
     private VectorUtil u = new VectorUtil();
-    private double indexOfRefraction;
-    private double cloudiness;
+
+    private double refIndex;
     private Color tint;
-    private double cosTheta;
-    private double sinTheta;
 
-    public Dielectric(double refractiveIndex, double cloudiness, Color tint) {
-        this.indexOfRefraction = refractiveIndex;
-        this.cloudiness = cloudiness;
+    public Dielectric(double refractiveIndex, Color tint) {
+        this.refIndex = refractiveIndex;
         this.tint = tint;
-    }
-
-    Vector refract(Vector initial, Vector n, double etaiOverEtat) { // The variables here are named for Snells' Law!
-
-        initial = u.unitVector(initial);
-        n = u.unitVector(n);
-        double cosThetai = u.dotProduct(u.scalar(initial, -1), n);
-
-
-        double sinSquaredTheta = (etaiOverEtat * etaiOverEtat) * (1 - (cosThetai * cosThetai));
-
-        Vector rOutParallel = u.scalar(u.add(initial, u.scalar(n, cosThetai)), etaiOverEtat);
-        Vector rOutPerpendicular = u.scalar(n, Math.sqrt(1.0 - u.lengthSquared(rOutParallel)));
-        Vector rOutFinal = u.add(u.scalar(initial, etaiOverEtat), u.subtract(rOutParallel, rOutPerpendicular));
-
-        return rOutFinal;
-
-
-    }
-
-    double reflectance(double cosine, double refractRatio) {
-        double r0 = Math.pow((1 - refractRatio) / (1 + refractRatio), 2);
-        return r0 + (1 - r0) * Math.pow((1 - cosine), 5);
     }
 
     @Override
     public MaterialData Scatter(Vector dirIn, Hittable rec, Color attenuation, Ray scattered) {
 
+        double etaRatio = rec.frontFace ? (1.0 / refIndex) : refIndex;
+        double cosThetaI = Math.min(
+                u.dotProduct(u.scalar(u.unitVector(rec.contactPoint), -1.0), u.unitVector(rec.normal)),
+                1.0
+        );
+        double sinSquaredThetaT = Math.pow(etaRatio, 2) * (1 - Math.pow(cosThetaI, 2));
+        double cosineThetaT = Math.sqrt(1 - sinSquaredThetaT);
+        double sinThetaI = Math.sqrt(1 - (cosThetaI * cosThetaI));
 
-        Vector reflected = u.unitVector(u.add(dirIn, u.scalar(rec.normal, 2.0)));
-        Vector unitDirection = u.unitVector(dirIn);
-        Vector vecOut;
+        Vector unitDir = u.unitVector(rec.contactPoint);
+        Vector unitNorm = u.unitVector(rec.normal);
+        double n1 = rec.frontFace ? 1.0 : refIndex;
+        double n2 = rec.frontFace ? refIndex : 1.0;
 
-        cosTheta = u.dotProduct(u.unitVector(dirIn), u.unitVector(rec.normal));
-        sinTheta = Math.sqrt(1 - (cosTheta * cosTheta));
-        double refractionRatio = rec.frontFace ? (1.0 / indexOfRefraction) : indexOfRefraction;
+        double reflectPerp = Math.pow((n1 * cosThetaI - n2 * cosineThetaT) / (n1 * cosThetaI + n2 * cosineThetaT), 2);
+        double reflectPara = Math.pow((n2 * cosThetaI - n1 * cosineThetaT) / (n2 * cosThetaI + n1 * cosineThetaT), 2);
 
-        Vector refracted = refract(unitDirection, rec.normal, refractionRatio);
-        boolean cannotRefract = (refractionRatio * sinTheta) > 1.0;
+        double reflectOverall = (reflectPara + reflectPerp) / 2;
+        double transmittance = 1 - reflectOverall;
 
-        vecOut = (cannotRefract || (reflectance(cosTheta, refractionRatio) > Math.random())) ? reflected : refracted;
-        boolean hit = true;
+        Vector reflected = u.unitVector(u.add(unitDir, u.scalar(unitNorm, 2.0)));
+        Vector refracted = refract(unitDir, unitNorm, etaRatio);
+
+        Vector returnVector = transmittance < (Math.random() * 0.5) ? reflected : refracted;
+        //Vector returnVector = refracted;
+        return new MaterialData(true, tint, new Ray(rec.contactPoint, returnVector));
+    }
+
+    public Vector refract(Vector directionVector, Vector normalVector, double etaRatio) {
+
+        double cosTheta = Math.min(u.dotProduct(u.scalar(directionVector, -1.0), normalVector), 1.0);
+        Vector rOutPerp = u.scalar(u.add(directionVector, u.scalar(normalVector, cosTheta)), etaRatio);
+        Vector rOutPara = u.scalar(normalVector, -Math.sqrt(Math.abs(1 - (u.length(rOutPerp) * u.length(rOutPerp)))));
+
+        return u.add(rOutPerp, u.scalar(rOutPara, 100000)); // do NOT FUCKING TOUCH THIS. DON'T FUCKING THINK ABOUT IT. DO NOT FUCKING TOUCH
+        //I HAVE NO IDEA WHY THIS WORKS BUT I SPENT 6 HOURS TROUBLESHOOTING AND THIS WORKED
 
 
-        return new MaterialData(hit, tint, new Ray(rec.contactPoint, vecOut));
     }
 }
+

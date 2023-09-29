@@ -8,9 +8,9 @@ public class Main {
     static double viewportHeight = 2.0;
     static double focalLength = 1.0;
 
-    static int samplesPerPixel = 5; // be careful with this! the time complexity scales as O(n^2)
+    static int samplesPerPixel = 25; // be careful with this! the time complexity scales as O(n^2)
 
-    static int maxDepth = 500; // time scales linearly here
+    static int maxDepth = 50; // time scales linearly here
 
     public static void main(String[] args) throws IOException {
         //Camera settings
@@ -28,7 +28,7 @@ public class Main {
         Material ground = new LambertianDiffuse(new Color(0.8, 0.8, 0.0), 0);
         Material center = new LambertianDiffuse(new Color(0.7, 0.3, 0.3) ,0);
         Material left = new Metal(new Color(1,1,1), 0);
-        Material right = new Dielectric(3, 0, new Color(1,1,1));
+        Material right = new Dielectric(1.5, new Color(1,1,1));
         Material back = new LambertianDiffuse(new Color(0.1, 0.1, 0.7), 0);
 
         //The WHOLE UNIVERSE
@@ -36,9 +36,9 @@ public class Main {
         HittableList world = new HittableList(new Sphere[]{
 
                 new Sphere(new Vector(0, -20.5, 0), 20, ground),
-                new Sphere(new Vector(0, 0, 0), 0.5, right),
+                new Sphere(new Vector(0, 0, 0), 0.5, center),
                 new Sphere(new Vector(-1.2, 0, 0), 0.5, left),
-                new Sphere(new Vector(1.2, 0, 0), 0.5, center),
+                new Sphere(new Vector(1.2, 0, 0), 0.5, right),
                 new Sphere(new Vector(1, 0, -1.3), 0.5,  back)
 
         });
@@ -77,7 +77,7 @@ public class Main {
 
             Color attenuation = null;
             Ray scattered = null;
-            MaterialData mat = world.mat.Scatter(u.unitVector(world.contactPoint), world, attenuation, scattered);
+            MaterialData mat = world.mat.Scatter(world.contactPoint, world, attenuation, scattered);
             if(!mat.hit){
                 return mat.materialColor;
             }

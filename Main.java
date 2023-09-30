@@ -8,7 +8,7 @@ public class Main {
     static double viewportHeight = 2.0;
     static double focalLength = 1.0;
 
-    static int samplesPerPixel = 25; // be careful with this! the time complexity scales as O(n^2)
+    static int samplesPerPixel = 5; // be careful with this! the time complexity scales as O(n^2)
 
     static int maxDepth = 50; // time scales linearly here
 
@@ -39,7 +39,7 @@ public class Main {
                 new Sphere(new Vector(0, 0, 0), 0.5, center),
                 new Sphere(new Vector(-1.2, 0, 0), 0.5, left),
                 new Sphere(new Vector(1.2, 0, 0), 0.5, right),
-                new Sphere(new Vector(1, 0, -1.3), 0.5,  back)
+                new Sphere(new Vector(-1, 0, -1.3), 0.5,  back)
 
         });
 
@@ -112,7 +112,8 @@ public class Main {
         Vector tempUpperLeft = new Vector(
                 r.getDirection().x - (0.5 * tempDeltaU.x),
                 r.getDirection().y - (0.5 * tempDeltaV.y),
-                r.getDirection().z);
+                r.getDirection().z
+        );
 
         Vector tempP00 = u.add(tempUpperLeft, u.add(u.scalar(tempDeltaU, (1.0 / samplesPerPixel)), u.scalar(tempDeltaV, 1.0 / samplesPerPixel)));
         double tempRed = 0;

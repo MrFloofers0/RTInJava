@@ -10,8 +10,9 @@ public class Vector {
         this.z = Z;
     }
 
-
-
+    public double length() {
+        return (Math.sqrt(x * x + y * y + z * z));
+    }
 
 
 }

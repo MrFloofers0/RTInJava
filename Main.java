@@ -8,7 +8,7 @@ public class Main {
     static double viewportHeight = 2.0;
     static double focalLength = 1.0;
 
-    static int samplesPerPixel = 5; // be careful with this! the time complexity scales as O(n^2)
+    static int samplesPerPixel = 3; // be careful with this! the time complexity scales as O(n^2)
 
     static int maxDepth = 50; // time scales linearly here
 
@@ -27,19 +27,21 @@ public class Main {
         //Materials in the whole universe
         Material ground = new LambertianDiffuse(new Color(0.8, 0.8, 0.0), 0);
         Material center = new LambertianDiffuse(new Color(0.7, 0.3, 0.3) ,0);
-        Material left = new Metal(new Color(1,1,1), 0);
-        Material right = new Dielectric(1.5, new Color(1,1,1));
+        Material right = new Metal(new Color(1,1,1), 0);
+        Material left = new Dielectric(1.5, new Color(1,1,1));
         Material back = new LambertianDiffuse(new Color(0.1, 0.1, 0.7), 0);
+
 
         //The WHOLE UNIVERSE
 
         HittableList world = new HittableList(new Sphere[]{
 
-                new Sphere(new Vector(0, -20.5, 0), 20, ground),
-                new Sphere(new Vector(0, 0, 0), 0.5, center),
+                new Sphere(new Vector(0, -2000.5, 0), 2000, ground),
+                //new Sphere(new Vector(0, 0, 0), 0.5, center),
                 new Sphere(new Vector(-1.2, 0, 0), 0.5, left),
                 new Sphere(new Vector(1.2, 0, 0), 0.5, right),
-                new Sphere(new Vector(-1, 0, -1.3), 0.5,  back)
+                new Sphere(new Vector(-1, 0, -1.3), 0.5,  back),
+                new Sphere(new Vector(0, 0, 0), 0.5, center)
 
         });
 

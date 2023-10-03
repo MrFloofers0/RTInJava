@@ -13,7 +13,7 @@ public class Main {
 
     static int maxDepth = 50; // time scales linearly here
     static int numberOfThreads = 1; //no touchy
-    static Vector cameraCenter = new Vector(12, 0, 10);
+    static Vector cameraCenter = new Vector(0, 0, -2);
     //Materials in the whole universe
     static Material ground = new LambertianDiffuse(new Color(0.8, 0.8, 0.0), 0);
     static Material center = new LambertianDiffuse(new Color(0.7, 0.3, 0.3), 0);
@@ -26,12 +26,12 @@ public class Main {
 
     static HittableList world = new HittableList(new Sphere[]{
 
-            new Sphere(new Vector(0, -2005, 0), 2000, ground),
+            new Sphere(new Vector(0, -2005, -15), 2000, ground),
             //new Sphere(new Vector(0, 0, 0), 0.5, center),
-            new Sphere(new Vector(-12, 0, 0), 5, left),
-            new Sphere(new Vector(15, 0, 0), 5, right),
-            new Sphere(new Vector(5, 0, -13), 5, back),
-            new Sphere(new Vector(0, 0, 0), 5, center)
+            new Sphere(new Vector(-12, 0, -15), 5, left),
+            new Sphere(new Vector(12, 0, -15), 5, right),
+            new Sphere(new Vector(5, 0, -28), 5, back),
+            new Sphere(new Vector(0, 0, -15), 5, center)
 
     });
 

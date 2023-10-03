@@ -9,6 +9,11 @@ public class Dielectric extends Material {
         this.tint = tint;
     }
 
+    public static double calculateSchlickApproximation(double n1, double n2, double cosI) {
+        double r0 = Math.pow((n1 - n2) / (n1 + n2), 2);
+        return r0 + (1 - r0) * Math.pow(1 - cosI, 5);
+    }
+
     @Override
     public MaterialData Scatter(Vector dirIn, Hittable rec, Color attenuation, Ray scattered) {
 
@@ -26,38 +31,31 @@ public class Dielectric extends Material {
         double reflectancePerpendicular = Math.pow(((n1 * cosI) - (n2 * cosT)) / ((n1 * cosI) + (n2 * cosT)), 2);
         double reflectanceParallel = Math.pow(((n2 * cosI) - (n1 * cosT)) / ((n2 * cosI) + (n1 * cosT)), 2);
 
-        double reflectance = (reflectancePerpendicular + reflectanceParallel) / 2;
+        double reflectance = calculateSchlickApproximation(n1, n2, cosI);
 
         Vector rPrime = refract(rec.normal, rec.normal, etaRatio);
-        Vector reflected = u.add(unitDirection, u.scalar(u.scalar(correctedNormal, u.dotProduct(unitDirection, correctedNormal)), 2.0));
+        Vector reflected = u.subtract(unitDirection, u.scalar(u.scalar(correctedNormal, u.dotProduct(unitDirection, correctedNormal)), 2.0));
         //Vector returnVector = (sinI * etaRatio) > 1.0? reflected : rPrime;
         Vector returnVector;
 
-        if ((sinI * etaRatio) > 1.0 && (u.dotProduct(unitDirection, rec.normal) > 0)) {
+        if ((sinI * etaRatio) > 1.0 && n1 > n2) {
             // Must reflect
             returnVector = reflected;
         } else {
             // Can refract
-            //returnVector = cosI < Math.random() ? reflected : rPrime;
+
+            returnVector = reflectance > Math.random() ? reflected : rPrime;
             //returnVector = rPrime;
         }
-        returnVector = reflected;
-
 
         return new MaterialData(true, tint, new Ray(rec.contactPoint, returnVector));
-    }
-
-
-    Vector reflect(Vector v, Vector n) {
-        return u.subtract(v, u.scalar(n, 2.0 * u.dotProduct(v, n)));
-        //return v - 2 * dot(v, n)*n;
     }
 
     public Vector refract(Vector initial, Vector n, double nt) {
         double cosI = u.dotProduct(u.scalar(initial, -1), n);
         double temp = 1.0 - nt * nt * (1.0 - cosI * cosI);
 
-        return u.scalar(u.add(initial, u.scalar(n, nt * cosI - Math.sqrt(temp))), nt);
 
+        return u.add(u.scalar(initial, nt), u.scalar(n, nt * cosI - Math.sqrt(Math.abs(temp))));
     }
 }

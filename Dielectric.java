@@ -13,23 +13,37 @@ public class Dielectric extends Material {
     public MaterialData Scatter(Vector dirIn, Hittable rec, Color attenuation, Ray scattered) {
 
         Vector unitDirection = u.unitVector(rec.contactPoint);
-        double etaRatio = rec.frontFace ? (1 / refIndex) : refIndex;
-        double cosI = u.dotProduct(rec.normal, u.scalar(unitDirection, -1));
+        double etaRatio = u.dotProduct(rec.normal, unitDirection) > 0 ? (1 / refIndex) : refIndex;
+        Vector correctedNormal = (u.dotProduct(unitDirection, rec.normal) > 0) ? u.scalar(rec.normal, -1) : rec.normal;
+
+        double cosI = u.dotProduct(correctedNormal, u.scalar(unitDirection, -1));
         double sinI = Math.sqrt(1 - cosI * cosI);
-        double cosT =   Math.sqrt(1 - ((etaRatio * etaRatio) * (1 - cosI * cosI)));
+        double cosT = Math.sqrt(1 - ((etaRatio * etaRatio) * (sinI * sinI)));
 
 
-        double n1 = rec.frontFace ? 1.0 : refIndex;
-        double n2 = rec.frontFace ? refIndex : 1.0;
+        double n1 = u.dotProduct(rec.normal, unitDirection) < 0 ? 1.0 : refIndex;
+        double n2 = u.dotProduct(rec.normal, unitDirection) < 0 ? refIndex : 1.0;
         double reflectancePerpendicular = Math.pow(((n1 * cosI) - (n2 * cosT)) / ((n1 * cosI) + (n2 * cosT)), 2);
         double reflectanceParallel = Math.pow(((n2 * cosI) - (n1 * cosT)) / ((n2 * cosI) + (n1 * cosT)), 2);
+
         double reflectance = (reflectancePerpendicular + reflectanceParallel) / 2;
 
-        Vector rPrime = refract(u.unitVector(rec.normal), rec.normal, etaRatio);
-        Vector reflected = u.add(unitDirection, u.scalar(rec.normal, u.dotProduct(unitDirection, rec.normal)));
+        Vector rPrime = refract(rec.normal, rec.normal, etaRatio);
+        Vector reflected = u.add(unitDirection, u.scalar(u.scalar(correctedNormal, u.dotProduct(unitDirection, correctedNormal)), 2.0));
+        //Vector returnVector = (sinI * etaRatio) > 1.0? reflected : rPrime;
+        Vector returnVector;
 
-        System.out.println(((n1 * cosI) + (n2 * cosT))  );
-        Vector returnVector = (sinI * etaRatio) > 1.0 || reflectance > Math.random() ? reflected : rPrime;
+        if ((sinI * etaRatio) > 1.0 && (u.dotProduct(unitDirection, rec.normal) > 0)) {
+            // Must reflect
+            returnVector = reflected;
+        } else {
+            // Can refract
+            //returnVector = cosI < Math.random() ? reflected : rPrime;
+            //returnVector = rPrime;
+        }
+        returnVector = reflected;
+
+
         return new MaterialData(true, tint, new Ray(rec.contactPoint, returnVector));
     }
 
@@ -40,8 +54,7 @@ public class Dielectric extends Material {
     }
 
     public Vector refract(Vector initial, Vector n, double nt) {
-        Vector unitinitial = u.unitVector(initial);
-        double cosI = -1.0 * u.dotProduct(unitinitial, n);
+        double cosI = u.dotProduct(u.scalar(initial, -1), n);
         double temp = 1.0 - nt * nt * (1.0 - cosI * cosI);
 
         return u.scalar(u.add(initial, u.scalar(n, nt * cosI - Math.sqrt(temp))), nt);

@@ -47,6 +47,7 @@ public class Sphere extends Hittable {
         rec.normal = u.unitVector(u.subtract(rec.contactPoint, center));
         rec.setFaceNormal(r, rec.normal);
         rec.mat = mat;
+        setFaceNormal(r, rec.normal);
         return true;
     }
 }

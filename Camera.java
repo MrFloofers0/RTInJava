@@ -12,10 +12,13 @@ public class Camera {
     public Vector pixel00;
     public Vector pixelDeltaU; //Change in width
     public Vector pixelDeltaV; // Change in height
-    public Camera(Vector cameraCenter, double viewportHeight, double aspectRatio, int imageHeight, double focalLength) {
+    public Camera(Vector cameraCenter, double FOV, double aspectRatio, int imageHeight, double focalLength) {
         VectorUtil u = new VectorUtil();
 
         imageWidth = (int) (aspectRatio * imageHeight);
+        double theta = Math.toRadians(FOV);
+        double heightFromAngle = Math.tan(theta / 2);
+        double viewportHeight = 2 * heightFromAngle * focalLength;
         viewportWidth = viewportHeight * ((double) imageWidth / imageHeight);
         this.aspectRatio = aspectRatio;
         this.focalLength = focalLength;

@@ -6,7 +6,7 @@ public class Main {
     static double aspectRatio = 16.0 / 9.0;
     static int imageHeight = 480;
 
-    static double viewportHeight = 2.0;
+    static double FOV = 90;
     static double focalLength = 1.0;
 
     static int samplesPerPixel = 5; // be careful with this! the time complexity scales as O(n^2)
@@ -17,10 +17,10 @@ public class Main {
     //Materials in the whole universe
     static Material ground = new LambertianDiffuse(new Color(0.8, 0.8, 0.0), 0);
     static Material center = new LambertianDiffuse(new Color(0.7, 0.3, 0.3), 0);
-    static Material left = new Metal(new Color(1, 1, 1), 0);
-    static Material right = new Dielectric(1.5, new Color(1, 1, 1));
+    static Material left = new Metal(new Color(1.0, 1.0, 1.0), 0);
+    static Material right = new Dielectric(1.5, new Color(1.0, 1.0, 1.0), false);
     static Material back = new LambertianDiffuse(new Color(0.1, 0.1, 0.7), 0);
-    static Camera camera = new Camera(cameraCenter, viewportHeight, aspectRatio, imageHeight, focalLength);
+    static Camera camera = new Camera(cameraCenter, FOV, aspectRatio, imageHeight, focalLength);
 
     //the WHOLE UNIVERSE
 
@@ -32,6 +32,7 @@ public class Main {
             new Sphere(new Vector(12, 0, -15), 5, right),
             new Sphere(new Vector(5, 0, -28), 5, back),
             new Sphere(new Vector(0, 0, -15), 5, center)
+            //new Sphere(new Vector(12,0, -15), 2.5, inner)
 
     });
 

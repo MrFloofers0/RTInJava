@@ -1,68 +1,45 @@
-import java.lang.Math;
-
 public class Color {
 
-    private short red;
-    private short blue;
-    private short green;
     Interval enclose = new Interval(0, 255.999);
+    private double red;
+    private double blue;
+    private double green;
 
-    private double deLinearize(double num){
-        return num;
-    }
-
-    public Color(short red, short green, short blue) {
-        this.red = red;
-        this.blue = blue;
-        this.green = green;
+    public Color(int red, int green, int blue) {
+        this.red = (double) red / 255;
+        this.blue = (double) blue / 255;
+        this.green = (double) green / 255;
     }
 
     public Color(double red, double green, double blue) {
-        this.red = (short) enclose.clamp(deLinearize(red) * 255.999);
-        this.green = (short) enclose.clamp(deLinearize(green) * 255.999);
-        this.blue = (short) enclose.clamp(deLinearize(blue) * 255.999);
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
     }
 
-    public Color(Color[] toAvg) {
 
-        double tempRed = 0;
-        double tempGreen = 0;
-        double tempBlue = 0;
-
-        for (Color color : toAvg) {
-            tempRed += color.getRed();
-            tempGreen += color.getGreen();
-            tempBlue += color.getBlue();
-        }
-
-        this.red = (short) (tempRed / toAvg.length);
-        this.green = (short) (tempBlue / toAvg.length);
-        this.blue = (short) (tempBlue / toAvg.length);
-
+    public int getRed() {
+        return (int) (red * 255);
     }
 
-    public short getRed() {
-        return red;
+    public int getGreen() {
+        return (int) (green * 255);
     }
 
-    public short getGreen() {
-        return green;
-    }
-
-    public short getBlue() {
-        return blue;
+    public int getBlue() {
+        return (int) (blue * 255);
     }
 
     public double getRedDouble() {
-        return ((double) red / 255);
+        return red;
     }
 
     public double getGreenDouble() {
-        return ((double) green / 255);
+        return green;
     }
 
     public double getBlueDouble() {
-        return ((double) blue / 255);
+        return blue;
     }
 
 
